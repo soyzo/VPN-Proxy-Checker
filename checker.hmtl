@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Fraud Score Checker</title>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // URL of the public API that returns the visitor's IP address
+            const ipApiUrl = 'https://api.ipify.org?format=json';
+            
+            // Replace with your Scamalytics API key
+            const scamalyticsApiKey = 'YOUR_SCAMALYTICS_API_KEY';
+            
+            // Replace with your Scamalytics API URL
+            const scamalyticsApiUrl = 'https://scamalytics.com/api/v1/score?ip=';
+
+            // Fraud score threshold
+            const fraudScoreThreshold = 20;
+            
+            // Fetch the IP address from the public API
+            fetch(ipApiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const ipAddress = data.ip;
+                    console.log('Visitor IP Address:', ipAddress); // Debug log to verify IP address
+
+                    // Fetch the fraud score from Scamalytics
+                    return fetch(scamalyticsApiUrl + ipAddress, {
+                        method: 'GET',
+                        headers: { 
+                            'Authorization': `Bearer ${scamalyticsApiKey}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const fraudScore = data.score;
+                    console.log('Fraud Score:', fraudScore); // Debug log to verify fraud score
+
+                    // Check if the fraud score is above the threshold
+                    if (fraudScore > fraudScoreThreshold) {
+                        alert('Please turn off VPN or proxy before using this site.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+    </script>
+</head>
+<body>
+    <h1>Welcome to My Website</h1>
+    <p>We are checking your IP address for security purposes.</p>
+</body>
+</html>
